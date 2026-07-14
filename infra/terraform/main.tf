@@ -38,6 +38,18 @@ resource "aws_s3_bucket_public_access_block" "frontend_bucket_public_access" {
   restrict_public_buckets = false
 }
 
+# Static website hosting
+resource "aws_s3_bucket_website_configuration" "frontend_bucket_website" {
+  bucket = aws_s3_bucket.frontend_bucket.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
+  }
+}
 
 # Public bucket policy (depends on disabling Block Public Access first)
 resource "aws_s3_bucket_policy" "frontend_bucket_policy" {
