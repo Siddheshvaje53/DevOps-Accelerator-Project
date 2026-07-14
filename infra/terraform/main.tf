@@ -15,6 +15,30 @@ provider "aws"{
     region = var.aws_region
 }
 
+
+# -----------------------------
+# Frontend Hosting (S3 + CloudFront)
+# -----------------------------
+resource "aws_s3_bucket" "frontend_bucket" {
+  bucket        = var.frontend_bucket_name
+  force_destroy = true
+
+  tags = {
+    Name = "Frontend Hosting Bucket"
+  }
+}
+
+# Disable Block Public Access so bucket policy works
+resource "aws_s3_bucket_public_access_block" "frontend_bucket_public_access" {
+  bucket = aws_s3_bucket.frontend_bucket.id
+
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
+
 # Public bucket policy (depends on disabling Block Public Access first)
 resource "aws_s3_bucket_policy" "frontend_bucket_policy" {
   bucket = aws_s3_bucket.frontend_bucket.id
